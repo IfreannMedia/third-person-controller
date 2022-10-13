@@ -9,15 +9,18 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minVerticalAngle = -60;
     [SerializeField] private float maxVerticalAngle = 60;
     [SerializeField] private Vector2 framingOffset = new Vector2(0, 1);
+    [SerializeField] bool invertX, invertY;
 
     private float rotationX;
     private float rotationY;
 
     private void Update()
     {
-        rotationX += Input.GetAxis("Mouse Y") * rotationSpeed;
+        int invertedX = (invertX) ? -1 : 1;
+        int invertedY = (invertY) ? -1 : 1;
+        rotationX += Input.GetAxis("Mouse Y") * invertedX * rotationSpeed;
         rotationX = Mathf.Clamp(rotationX, minVerticalAngle, maxVerticalAngle);
-        rotationY += Input.GetAxis("Mouse X") * rotationSpeed;
+        rotationY += Input.GetAxis("Mouse X") * invertedY * rotationSpeed;
         Quaternion targetRotation = Quaternion.Euler(rotationX, rotationY, 0);
 
         Vector3 focusPos = target.position + new Vector3(framingOffset.x, framingOffset.y, 0);
