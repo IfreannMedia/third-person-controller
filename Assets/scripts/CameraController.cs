@@ -7,10 +7,15 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private Transform target;
 
-    [SerializeField] float distance = 5;
+    [SerializeField] private float distance = 5;
+
+    private float rotationY;
 
     private void Update()
     {
-        transform.position = target.position - new Vector3(0, 0, distance);
+        rotationY += Input.GetAxis("Mouse X");
+        Quaternion targetRotation = Quaternion.Euler(0, rotationY, 0);
+        transform.position = target.position - targetRotation * new Vector3(0, 0, distance);
+        transform.rotation = targetRotation;
     }
 }
