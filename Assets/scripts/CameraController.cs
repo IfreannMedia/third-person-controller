@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private Transform target;
+
+    [SerializeField] float distance = 5;
+
+    private void Update()
     {
-        
+        transform.position = target.position - new Vector3(0, 0, distance);
     }
 }
