@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
 
     private Quaternion targetRotation;
     private bool isGrounded;
+    private bool hasControl = true;
     private float ySpeed;
 
     private CameraController camController;
@@ -36,11 +37,13 @@ public class PlayerController : MonoBehaviour
 
         Vector3 moveDir = camController.PlanerRotation * moveInput;
 
+        if (!hasControl) return;
+
         GroundCheck();
-        if (isGrounded) 
+        if (isGrounded)
         {
             ySpeed = -0.05f;
-        } 
+        }
         else
         {
             ySpeed += Physics.gravity.y * Time.deltaTime;
@@ -53,7 +56,7 @@ public class PlayerController : MonoBehaviour
 
         if (moveAmount > 0)
         {
-            
+
             targetRotation = Quaternion.LookRotation(moveDir);
         }
 
@@ -72,5 +75,17 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = isGrounded ? new Color(0, 1, 0, .5f) : new Color(1, 0, 0, .75f);
         Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
+    }
+
+    public void HasControl(bool hasControl)
+    {
+        this.hasControl = hasControl;
+        this.charController.enabled = hasControl;
+
+        if (!hasControl)
+        {
+            animator.SetFloat("moveAmount", 0f);
+            targetRotation = transform.rotation;
+        }
     }
 }

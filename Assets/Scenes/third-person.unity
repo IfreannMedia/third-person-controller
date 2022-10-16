@@ -618,7 +618,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: a7fa76cce8834d64cba87cf975551ec3, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -660,6 +660,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
+  heightRayLength: 5
 --- !u!114 &469970535
 MonoBehaviour:
   m_ObjectHideFlags: 0
