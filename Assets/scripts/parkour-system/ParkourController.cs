@@ -66,6 +66,10 @@ public class ParkourController : MonoBehaviour
 
             if (action.EnableTargetMatching)
                 MatchTarget(action);
+
+            if (animator.IsInTransition(0) && timer >= .5f)
+                break;
+
             yield return null;
         }
 
