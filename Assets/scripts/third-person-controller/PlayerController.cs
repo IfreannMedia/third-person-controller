@@ -88,4 +88,6 @@ public class PlayerController : MonoBehaviour
             targetRotation = transform.rotation;
         }
     }
+
+    public float RotationSpeed => rotationSpeed;
 }

@@ -30,7 +30,7 @@ public class ParkourController : MonoBehaviour
                 {
                     if (action.CheckIfPossible(hitData, this.transform))
                     {
-                        StartCoroutine(DoParkourAction(action.AnimName));
+                        StartCoroutine(DoParkourAction(action));
                         break;
                     }
                 }
@@ -39,22 +39,32 @@ public class ParkourController : MonoBehaviour
 
     }
 
-    IEnumerator DoParkourAction(string name)
+    IEnumerator DoParkourAction(ParkourAction action)
     {
         inAction = true;
         playerController.HasControl(false);
         // set up next animation
-        animator.CrossFade(name, .2f);
+        animator.CrossFade(action.AnimName, .2f);
         // wait for end of frame
         yield return null;
         // get info of animation that will play
         AnimatorStateInfo stateInfo = animator.GetNextAnimatorStateInfo(0);
-        if (!stateInfo.IsName(name))
+        if (!stateInfo.IsName(action.AnimName))
         {
-            Debug.LogError("incorrect animation name given: " + name);
+            Debug.LogError("incorrect animation name given: " + action.AnimName);
         }
-        // wait for end of animation
-        yield return new WaitForSeconds(stateInfo.length);
+
+        // wait for end of animation + smoothly rotate toward obstacle
+        float timer = 0f;
+        while (timer <= stateInfo.length)
+        {
+            timer += Time.deltaTime;
+
+            if (action.RotateTowards)
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, action.TargetRotation, playerController.RotationSpeed);
+            // rotate player towards obstacle
+            yield return null;
+        }
         // set inAction to false, we can listen again for user input
         inAction = false;
         playerController.HasControl(true);
