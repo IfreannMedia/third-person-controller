@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2d35940807567b45b0b0a1291af5e80, type: 3}
   m_Name: JumpUp
   m_EditorClassIdentifier: 
-  animName: jumpUp
+  animName: JumpUp
   minHeight: 0.8
   maxHeight: 1.5
   rotateTowardsObstacle: 1

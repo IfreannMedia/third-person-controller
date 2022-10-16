@@ -676,6 +676,7 @@ MonoBehaviour:
   parkourActinos:
   - {fileID: 11400000, guid: 65c7fa36ed5504a4988f3be81b30da15, type: 2}
   - {fileID: 11400000, guid: b62d4e29b4b97a04bbf209512ea601eb, type: 2}
+  - {fileID: 11400000, guid: c287e6ba03cbe6b41b8ba3ab285f75ac, type: 2}
 --- !u!1 &666119565
 GameObject:
   m_ObjectHideFlags: 0

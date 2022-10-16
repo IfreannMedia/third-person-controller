@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName ="Parkour System/New parkour action")]
+[CreateAssetMenu(menuName = "Parkour System/New parkour action")]
 public class ParkourAction : ScriptableObject
 {
     [SerializeField] string animName;
@@ -10,12 +10,14 @@ public class ParkourAction : ScriptableObject
     [SerializeField] float minHeight;
     [SerializeField] float maxHeight;
     [SerializeField] bool rotateTowardsObstacle;
+    [SerializeField] float postActionDelay = 0.0f;
 
     [Header("Target Matching")]
     [SerializeField] bool enableTargetMatching = true;
     [SerializeField] AvatarTarget matchBodyPart;
     [SerializeField] float matchStartTime;
     [SerializeField] float matchTargetTime;
+    [SerializeField] Vector3 matchPosWeight = new Vector3(0, 1, 0);
 
     public Quaternion TargetRotation { get; set; }
     public Vector3 MatchPos { get; set; }
@@ -43,5 +45,7 @@ public class ParkourAction : ScriptableObject
     public AvatarTarget MatchBodyPart => this.matchBodyPart;
     public float MatchStartTime => this.matchStartTime;
     public float MatchTargetTime => this.matchTargetTime;
+    public Vector3 MatchPosWeight => this.matchPosWeight;
+    public float PostActionDelay => this.postActionDelay;
 
 }

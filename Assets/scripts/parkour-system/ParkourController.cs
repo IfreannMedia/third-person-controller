@@ -44,7 +44,7 @@ public class ParkourController : MonoBehaviour
         inAction = true;
         playerController.HasControl(false);
         // set up next animation
-        animator.CrossFade(action.AnimName, .2f);
+        animator.CrossFade(action.AnimName, .02f);
         // wait for end of frame
         yield return null;
         // get info of animation that will play
@@ -65,9 +65,12 @@ public class ParkourController : MonoBehaviour
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, action.TargetRotation, playerController.RotationSpeed);
 
             if (action.EnableTargetMatching)
-
-                yield return null;
+                MatchTarget(action);
+            yield return null;
         }
+
+        yield return new WaitForSeconds(action.PostActionDelay);
+
         // set inAction to false, we can listen again for user input
         inAction = false;
         playerController.HasControl(true);
@@ -76,7 +79,7 @@ public class ParkourController : MonoBehaviour
     void MatchTarget(ParkourAction action)
     {
         if (animator.isMatchingTarget) return;
-        animator.MatchTarget(action.MatchPos, transform.rotation, action.MatchBodyPart, new MatchTargetWeightMask(new Vector3(0, 1, 0), 0),
+        animator.MatchTarget(action.MatchPos, transform.rotation, action.MatchBodyPart, new MatchTargetWeightMask(action.MatchPosWeight, 0),
             action.MatchStartTime, action.MatchTargetTime);
     }
 }
