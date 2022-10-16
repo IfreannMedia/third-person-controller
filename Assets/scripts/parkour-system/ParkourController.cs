@@ -60,13 +60,23 @@ public class ParkourController : MonoBehaviour
         {
             timer += Time.deltaTime;
 
+            // rotate player towards obstacle
             if (action.RotateTowards)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, action.TargetRotation, playerController.RotationSpeed);
-            // rotate player towards obstacle
-            yield return null;
+
+            if (action.EnableTargetMatching)
+
+                yield return null;
         }
         // set inAction to false, we can listen again for user input
         inAction = false;
         playerController.HasControl(true);
+    }
+
+    void MatchTarget(ParkourAction action)
+    {
+        if (animator.isMatchingTarget) return;
+        animator.MatchTarget(action.MatchPos, transform.rotation, action.MatchBodyPart, new MatchTargetWeightMask(new Vector3(0, 1, 0), 0),
+            action.MatchStartTime, action.MatchTargetTime);
     }
 }
