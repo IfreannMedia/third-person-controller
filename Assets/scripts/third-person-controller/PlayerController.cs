@@ -16,15 +16,19 @@ public class PlayerController : MonoBehaviour
     private bool hasControl = true;
     private float ySpeed;
 
+    public bool IsOnLedge { get; set; }
+
     private CameraController camController;
     private Animator animator;
     private CharacterController charController;
+    private EnvironmentScanner envScanner;
 
     private void Awake()
     {
         camController = Camera.main.GetComponent<CameraController>();
         animator = GetComponent<Animator>();
         charController = GetComponent<CharacterController>();
+        envScanner = GetComponent<EnvironmentScanner>();
     }
     private void Update()
     {
@@ -43,6 +47,12 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             ySpeed = -0.05f;
+
+            IsOnLedge = envScanner.LedgeCheck(moveDir);
+            if (IsOnLedge)
+            {
+                Debug.Log("on LEDGE BABY");
+            }
         }
         else
         {
