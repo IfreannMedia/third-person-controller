@@ -44,6 +44,7 @@ public class ParkourController : MonoBehaviour
         inAction = true;
         playerController.HasControl(false);
         // set up next animation
+        animator.SetBool("mirror", action.Mirror);
         animator.CrossFade(action.AnimName, .02f);
         // wait for end of frame
         yield return null;

@@ -15,15 +15,16 @@ public class ParkourAction : ScriptableObject
 
     [Header("Target Matching")]
     [SerializeField] bool enableTargetMatching = true;
-    [SerializeField] AvatarTarget matchBodyPart;
+    [SerializeField] protected AvatarTarget matchBodyPart;
     [SerializeField] float matchStartTime;
     [SerializeField] float matchTargetTime;
     [SerializeField] Vector3 matchPosWeight = new Vector3(0, 1, 0);
 
     public Quaternion TargetRotation { get; set; }
     public Vector3 MatchPos { get; set; }
+    public bool Mirror { get; set; }
 
-    public bool CheckIfPossible(ObstacleHitData hitData, Transform player)
+    public virtual bool CheckIfPossible(ObstacleHitData hitData, Transform player)
     {
         if (!string.IsNullOrEmpty(obstacleTag) && hitData.forwardHit.transform.tag != obstacleTag)
             return false;
