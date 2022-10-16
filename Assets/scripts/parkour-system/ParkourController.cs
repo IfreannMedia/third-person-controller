@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ParkourController : MonoBehaviour
 {
+    [SerializeField] List<ParkourAction> parkourActinos;
+
     bool inAction = false;
     EnvironmentScanner environmentScanner;
     Animator animator;
@@ -23,22 +25,34 @@ public class ParkourController : MonoBehaviour
             ObstacleHitData hitData = environmentScanner.ObstacleCheck();
             if (hitData.forwardHitFound)
             {
-                StartCoroutine("DoParkourAction");
+
+                foreach (ParkourAction action in parkourActinos)
+                {
+                    if (action.CheckIfPossible(hitData, this.transform))
+                    {
+                        StartCoroutine(DoParkourAction(action.AnimName));
+                        break;
+                    }
+                }
             }
         }
 
     }
 
-    IEnumerator DoParkourAction()
+    IEnumerator DoParkourAction(string name)
     {
         inAction = true;
         playerController.HasControl(false);
         // set up next animation
-        animator.CrossFade("stepUp", .2f);
+        animator.CrossFade(name, .2f);
         // wait for end of frame
         yield return null;
         // get info of animation that will play
         AnimatorStateInfo stateInfo = animator.GetNextAnimatorStateInfo(0);
+        if (!stateInfo.IsName(name))
+        {
+            Debug.LogError("incorrect animation name given: " + name);
+        }
         // wait for end of animation
         yield return new WaitForSeconds(stateInfo.length);
         // set inAction to false, we can listen again for user input
