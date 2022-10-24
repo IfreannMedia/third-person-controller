@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 groundCheckOffset;
     [SerializeField] private LayerMask groundLayer;
 
-    private Vector3 desiredMoveDir; // moveDir from player's input
+    private Vector3 desiredMoveDir; // moveDir from player's input 
     private Vector3 moveDir;
     private Vector3 velocity;
     private Quaternion targetRotation;
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private float ySpeed;
 
 
-    public LedgeData LedgeData{ get; set; }
+    public LedgeData LedgeData { get; set; }
     public bool IsOnLedge { get; set; }
 
     private CameraController camController;
@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards
             (transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-       
+
     }
 
     private void GroundCheck()
@@ -100,12 +100,28 @@ public class PlayerController : MonoBehaviour
 
     private void LedgeMovement()
     {
-        float angle = Vector3.Angle(LedgeData.surfaceHit.normal, desiredMoveDir);
-        
-        if(angle < 90)
+        float signedAngle = Vector3.SignedAngle(LedgeData.surfaceHit.normal, desiredMoveDir, Vector3.up);
+        float angle = Mathf.Abs(signedAngle);
+
+        if (Vector3.Angle(desiredMoveDir, transform.forward) >= 80)
+        {
+            velocity = Vector3.zero;
+            return;
+        }
+
+
+        if (angle < 60)
         {
             velocity = Vector3.zero;
             moveDir = Vector3.zero;
+        }
+        else if (angle < 90)
+        {
+            Vector3 left = Vector3.Cross(Vector3.up, LedgeData.surfaceHit.normal);
+            Vector3 dir = left * Mathf.Sign(signedAngle);
+
+            velocity = velocity.magnitude * dir;
+            moveDir = dir;
         }
     }
 
