@@ -11,11 +11,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 groundCheckOffset;
     [SerializeField] private LayerMask groundLayer;
 
+    private Vector3 desiredMoveDir; // moveDir from player's input
+    private Vector3 moveDir;
+    private Vector3 velocity;
     private Quaternion targetRotation;
     private bool isGrounded;
     private bool hasControl = true;
     private float ySpeed;
 
+
+    public LedgeData LedgeData{ get; set; }
     public bool IsOnLedge { get; set; }
 
     private CameraController camController;
@@ -32,6 +37,7 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        velocity = Vector3.zero;
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
@@ -39,32 +45,37 @@ public class PlayerController : MonoBehaviour
 
         Vector3 moveInput = (new Vector3(h, 0, v)).normalized;
 
-        Vector3 moveDir = camController.PlanerRotation * moveInput;
+        desiredMoveDir = camController.PlanerRotation * moveInput;
+        moveDir = desiredMoveDir;
 
         if (!hasControl) return;
 
         GroundCheck();
+        animator.SetBool("isGrounded", isGrounded);
         if (isGrounded)
         {
+            velocity = desiredMoveDir * moveSpeed;
             ySpeed = -0.05f;
 
-            IsOnLedge = envScanner.LedgeCheck(moveDir);
+            IsOnLedge = envScanner.LedgeCheck(desiredMoveDir, out LedgeData ledgeData);
             if (IsOnLedge)
             {
-                Debug.Log("on LEDGE BABY");
+                LedgeData = ledgeData;
+                LedgeMovement();
             }
+            animator.SetFloat("moveAmount", velocity.magnitude / moveSpeed, 0.2f, Time.deltaTime);
         }
         else
         {
             ySpeed += Physics.gravity.y * Time.deltaTime;
+            velocity = transform.forward * moveSpeed / 2f;
         }
 
-        Vector3 velocity = moveDir * moveSpeed;
         velocity.y = ySpeed;
 
         charController.Move(velocity * Time.deltaTime);
 
-        if (moveAmount > 0)
+        if (moveAmount > 0 && moveDir.magnitude > .2f)
         {
 
             targetRotation = Quaternion.LookRotation(moveDir);
@@ -73,7 +84,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards
             (transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-        animator.SetFloat("moveAmount", moveAmount, 0.2f, Time.deltaTime);
+       
     }
 
     private void GroundCheck()
@@ -87,7 +98,18 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
     }
 
-    public void HasControl(bool hasControl)
+    private void LedgeMovement()
+    {
+        float angle = Vector3.Angle(LedgeData.surfaceHit.normal, desiredMoveDir);
+        
+        if(angle < 90)
+        {
+            velocity = Vector3.zero;
+            moveDir = Vector3.zero;
+        }
+    }
+
+    public void SetControl(bool hasControl)
     {
         this.hasControl = hasControl;
         this.charController.enabled = hasControl;

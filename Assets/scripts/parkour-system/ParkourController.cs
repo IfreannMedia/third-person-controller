@@ -5,6 +5,7 @@ using UnityEngine;
 public class ParkourController : MonoBehaviour
 {
     [SerializeField] List<ParkourAction> parkourActinos;
+    [SerializeField] ParkourAction jumpDownAction;
 
     bool inAction = false;
     EnvironmentScanner environmentScanner;
@@ -20,9 +21,11 @@ public class ParkourController : MonoBehaviour
 
     private void Update()
     {
+        ObstacleHitData hitData = environmentScanner.ObstacleCheck();
+
         if (Input.GetButton("Jump") && !inAction)
         {
-            ObstacleHitData hitData = environmentScanner.ObstacleCheck();
+            
             if (hitData.forwardHitFound)
             {
 
@@ -37,12 +40,22 @@ public class ParkourController : MonoBehaviour
             }
         }
 
+        if (playerController.IsOnLedge && !inAction && !hitData.forwardHitFound && Input.GetButton("Jump"))
+        {
+            if (playerController.LedgeData.angle <= 50)
+            {
+                playerController.IsOnLedge = false;
+                StartCoroutine(DoParkourAction(jumpDownAction));
+
+            }
+        }
+
     }
 
     IEnumerator DoParkourAction(ParkourAction action)
     {
         inAction = true;
-        playerController.HasControl(false);
+        playerController.SetControl(false);
         // set up next animation
         animator.SetBool("mirror", action.Mirror);
         animator.CrossFade(action.AnimName, .02f);
@@ -78,7 +91,7 @@ public class ParkourController : MonoBehaviour
 
         // set inAction to false, we can listen again for user input
         inAction = false;
-        playerController.HasControl(true);
+        playerController.SetControl(true);
     }
 
     void MatchTarget(ParkourAction action)
