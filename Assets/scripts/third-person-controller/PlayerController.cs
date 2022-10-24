@@ -137,5 +137,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool HasControl {
+        get => hasControl;
+        set => hasControl = value;
+    }
+
     public float RotationSpeed => rotationSpeed;
 }
