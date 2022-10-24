@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class EnvironmentScanner : MonoBehaviour
 {
@@ -35,31 +37,28 @@ public class EnvironmentScanner : MonoBehaviour
         float originOffset = 0.5f;
         Vector3 origin = transform.position + moveDir * originOffset + Vector3.up;
 
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, ledgeRayLength, obstacleLayer))
+        if (PhysicsUtil.ThreeRaycasts(origin, Vector3.down, 0.25f, transform,
+            out List<RaycastHit> hits, ledgeRayLength, obstacleLayer, true))
         {
-            Debug.DrawRay(origin, Vector3.down * ledgeRayLength, Color.green);
+            List<RaycastHit> validHits = hits.Where(h => transform.position.y - h.point.y > ledgeHeightThreshold).ToList();
 
-            Vector3 surfaceRayOrigin = transform.position + moveDir - new Vector3(0, 0.1f, 0);
-
-            if (Physics.Raycast(surfaceRayOrigin, -moveDir, out RaycastHit surfaceHit, 2, obstacleLayer))
+            if (validHits.Count > 0)
             {
-                float height = transform.position.y - hit.point.y;
+                Vector3 surfaceRayOrigin = validHits[0].point;
+                surfaceRayOrigin.y = transform.position.y - .1f;
 
-                if (height > ledgeHeightThreshold)
+                if (Physics.Raycast(surfaceRayOrigin, transform.position - surfaceRayOrigin, out RaycastHit surfaceHit, 2, obstacleLayer))
                 {
+                    Debug.DrawLine(surfaceRayOrigin, transform.position, Color.cyan);
+
+                    float height = transform.position.y - validHits[0].point.y;
+
                     ledgeData.angle = Vector3.Angle(transform.forward, surfaceHit.normal);
                     ledgeData.height = height;
                     ledgeData.surfaceHit = surfaceHit;
                     return true;
                 }
             }
-
-            //float height = transform.position.y - hit.point.y;
-
-            //if (height > ledgeHeightThreshold)
-            //{
-            //    return true;
-            //}
         }
 
         return false;
